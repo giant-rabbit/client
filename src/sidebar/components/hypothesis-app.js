@@ -112,6 +112,7 @@ function HypothesisAppController(
    *   completes. For non-OAuth logins, always resolves immediately.
    */
   this.login = function() {
+    groups.clearState();
     if (serviceConfig(settings)) {
       // Let the host page handle the login request
       bridge.call(bridgeEvents.LOGIN_REQUESTED);
@@ -179,6 +180,7 @@ function HypothesisAppController(
     if (!promptToLogout()) {
       return;
     }
+    groups.clearState();
     drafts.unsaved().forEach(function(draft) {
       $rootScope.$emit(events.ANNOTATION_DELETED, draft);
     });

@@ -63,6 +63,7 @@ describe('sidebar.components.hypothesis-app', function() {
       fakeStore = {
         tool: 'comment',
         clearSelectedAnnotations: sandbox.spy(),
+        getState: sinon.stub(),
       };
 
       fakeAnalytics = {
@@ -106,7 +107,10 @@ describe('sidebar.components.hypothesis-app', function() {
         reload: sandbox.stub().returns(Promise.resolve({ userid: null })),
       };
 
-      fakeGroups = { focus: sandbox.spy() };
+      fakeGroups = {
+        focus: sandbox.spy(),
+        clearState: sinon.stub(),
+      };
 
       fakeRoute = { reload: sandbox.spy() };
 
@@ -373,6 +377,13 @@ describe('sidebar.components.hypothesis-app', function() {
   describe('#login()', function() {
     beforeEach(() => {
       fakeAuth.login = sinon.stub().returns(Promise.resolve());
+      fakeStore.getState.returns({ directLinkedGroupFetchFailed: false });
+    });
+
+    it('calls clearState on the groups service', () => {
+      const ctrl = createController();
+      ctrl.login();
+      assert.called(fakeGroups.clearState);
     });
 
     it('initiates the OAuth login flow', () => {
@@ -433,6 +444,12 @@ describe('sidebar.components.hypothesis-app', function() {
         ctrl.logout();
 
         assert.equal(fakeWindow.confirm.callCount, 1);
+      });
+
+      it('calls clearState on the groups service', () => {
+        const ctrl = createController();
+        ctrl.logout();
+        assert.called(fakeGroups.clearState);
       });
 
       it('emits "annotationDeleted" for each unsaved draft annotation', function() {
