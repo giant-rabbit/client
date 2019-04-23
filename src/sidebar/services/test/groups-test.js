@@ -85,6 +85,9 @@ describe('groups', function() {
           const group = this.getState().focusedGroup;
           return group ? group.id : null;
         },
+        setDirectLinkedGroupFetchFailed: sinon.stub(),
+        clearDirectLinkedGroupFetchFailed: sinon.stub(),
+        clearGroups: sinon.stub(),
       }
     );
     fakeSession = sessionWithThreeGroups();
@@ -180,6 +183,40 @@ describe('groups', function() {
     });
   });
 
+  describe('#clearState', function() {
+    it('it clears the group state if there is a direct-linked group fetch failure', () => {
+      fakeStore.getState = sinon
+        .stub()
+        .returns({ directLinkedGroupFetchFailed: true });
+      const svc = service();
+
+      svc.clearState();
+
+      assert.called(fakeStore.clearGroups);
+    });
+
+    it('it clears the group state if the focused group is a private group', () => {
+      fakeStore.focusedGroup = sinon.stub().returns({ type: 'private' });
+      const svc = service();
+
+      svc.clearState();
+
+      assert.called(fakeStore.clearGroups);
+    });
+
+    it('it does not clear the group state otherwise', () => {
+      fakeStore.getState = sinon
+        .stub()
+        .returns({ directLinkedGroupFetchFailed: false });
+      fakeStore.focusedGroup = sinon.stub().returns({ type: 'open' });
+      const svc = service();
+
+      svc.clearState();
+
+      assert.notCalled(fakeStore.clearGroups);
+    });
+  });
+
   describe('#load', function() {
     it('filters out direct-linked groups that are out of scope and scope enforced', () => {
       const svc = service();
@@ -191,6 +228,8 @@ describe('groups', function() {
       fakeSettings.group = outOfScopeEnforcedGroup.id;
       fakeApi.group.read.returns(Promise.resolve(outOfScopeEnforcedGroup));
       return svc.load().then(groups => {
+        // The failure state is captured in the store.
+        assert.called(fakeStore.setDirectLinkedGroupFetchFailed);
         // The focus group is not set to the direct-linked group.
         assert.calledWith(fakeStore.focusGroup, dummyGroups[0].id);
         // The direct-linked group is not in the list of groups.
@@ -209,6 +248,8 @@ describe('groups', function() {
         )
       );
       return svc.load().then(() => {
+        // The failure state is captured in the store.
+        assert.called(fakeStore.setDirectLinkedGroupFetchFailed);
         // The focus group is not set to the direct-linked group.
         assert.calledWith(fakeStore.focusGroup, dummyGroups[0].id);
       });
@@ -324,6 +365,16 @@ describe('groups', function() {
       fakeApi.groups.list.returns(Promise.resolve(dummyGroups));
       return svc.load().then(() => {
         assert.calledWith(fakeStore.focusGroup, fakeSettings.group);
+      });
+    });
+
+    it('clears the directLinkedGroupFetchFailed state if loading a direct-linked group', () => {
+      const svc = service();
+      fakeSettings.group = dummyGroups[1].id;
+      fakeApi.groups.list.returns(Promise.resolve(dummyGroups));
+      return svc.load().then(() => {
+        assert.called(fakeStore.clearDirectLinkedGroupFetchFailed);
+        assert.notCalled(fakeStore.setDirectLinkedGroupFetchFailed);
       });
     });
 

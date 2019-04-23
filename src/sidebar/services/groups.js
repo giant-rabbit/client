@@ -77,6 +77,7 @@ function groups(
         directLinkedGroup.scopes.enforced
       ) {
         groups = groups.filter(g => g.id !== directLinkedGroupId);
+        store.setDirectLinkedGroupFetchFailed();
         directLinkedGroupId = undefined;
       }
     }
@@ -199,12 +200,16 @@ function groups(
         // particular group as well since it may not be in the results returned
         // by group.list or profile.groups.
         if (directLinkedGroup) {
+          // Clear any previously set state.
+          store.clearDirectLinkedGroupFetchFailed();
           const selectedGroupApi = api.group
             .read({
               id: directLinkedGroup,
               expand: params.expand,
             })
             .catch(() => {
+              // Set the state of directLinkedGroupFetchFailed to true.
+              store.setDirectLinkedGroupFetchFailed();
               // If the group does not exist or the user doesn't have permission,
               // return undefined.
               return undefined;
@@ -249,6 +254,34 @@ function groups(
 
         return groups;
       });
+  }
+
+  /*
+   * Clear the state of the groups if there is a direct-linked group
+   * fetch failure or the currently selected group is a private group.
+   *
+   * This is intended to be called during user state changes (aka on
+   * login or logout) so that any events that reference the focused
+   * group wait until the new focused group has been loaded before
+   * executing.
+   *
+   */
+  function clearState() {
+    // If the group is private, it will become unavailable when
+    // the user logs out and should not remain in focus.
+
+    // If there is a direct-linked group fetch failure that has not
+    // been cleared, a login may fix the fetch failure in which case
+    // the direct-linked group should be set as the focused group.
+
+    if (
+      store.getState().directLinkedGroupFetchFailed ||
+      store.focusedGroup().type === 'private'
+    ) {
+      // Clearing the state has the side-effect that the focused group and
+      // the groups are re-initialized.
+      store.clearGroups();
+    }
   }
 
   const sortGroups = memoize(groups => {
@@ -341,6 +374,7 @@ function groups(
 
     leave: leave,
     load: load,
+    clearState: clearState,
 
     focused: focused,
     focus: focus,
