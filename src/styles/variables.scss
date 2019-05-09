@@ -121,10 +121,14 @@ $zindex-tooltip: 20;
 // Other Variables
 // -------------------------
 $bucket-bar-width: 22px;
-$highlight-color: rgba(255, 255, 60, 0.3);
+$highlight-color-yellow: rgba(255, 255, 60, 0.3);
+$highlight-color-blue: rgba(156, 230, 255, 0.5);
+$highlight-color-green: rgba(156, 255, 173, 0.5);
+$highlight-color-purple: rgba(253, 156, 255, 0.5);
+$highlight-color: $highlight-color-yellow;
 $highlight-color-second: rgba(206, 206, 60, 0.4);
 $highlight-color-third: rgba(192, 192, 49, 0.4);
-$highlight-color-focus: rgba(156, 230, 255, 0.5);
+$highlight-color-focus: rgba(255, 156, 156, 0.5);
 $top-bar-height: 40px;
 $group-list-width: 300px;
 

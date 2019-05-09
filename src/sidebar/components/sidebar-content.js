@@ -230,6 +230,14 @@ function SidebarContentController(
     streamer.reconnect();
   });
 
+  $scope.$on(events.ANNOTATION_CREATED, function(event, annotation) {
+    frameSync.updateAnnotationAnchor(annotation);
+  });
+
+  $scope.$on(events.ANNOTATION_UPDATED, function(event, annotation) {
+    frameSync.updateAnnotationAnchor(annotation);
+  });
+
   $scope.$on(events.ANNOTATIONS_SYNCED, function(event, tags) {
     // When a direct-linked annotation is successfully anchored in the page,
     // focus and scroll to it

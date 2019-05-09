@@ -74,6 +74,7 @@ function DraftStore() {
       if (match(draft, model)) {
         return {
           isPrivate: draft.isPrivate,
+          color: draft.color,
           tags: draft.tags,
           text: draft.text,
         };
@@ -99,6 +100,7 @@ function DraftStore() {
     const newDraft = {
       model: { id: model.id, $tag: model.$tag },
       isPrivate: changes.isPrivate,
+      color: changes.color,
       tags: changes.tags,
       text: changes.text,
     };

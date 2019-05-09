@@ -10,6 +10,19 @@ $base-font-size: 14px;
   .annotator-hl {
     background-color: $highlight-color;
     cursor: pointer;
+
+    &.blue {
+      background-color: $highlight-color-blue;
+    }
+    &.yellow {
+      background-color: $highlight-color-yellow;
+    }
+    &.green {
+      background-color: $highlight-color-green;
+    }
+    &.purple {
+      background-color: $highlight-color-purple;
+    }
   }
 
   .annotator-hl .annotator-hl {

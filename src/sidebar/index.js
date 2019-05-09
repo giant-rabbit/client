@@ -186,6 +186,7 @@ function startAngularApp(config) {
     .component('streamContent', require('./components/stream-content'))
     .component('svgIcon', wrapReactComponent(require('./components/svg-icon')))
     .component('tagEditor', require('./components/tag-editor'))
+    .component('colorPicker', require('./components/color-picker'))
     .component('threadList', require('./components/thread-list'))
     .component('timestamp', require('./components/timestamp'))
     .component('topBar', require('./components/top-bar'))

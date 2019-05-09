@@ -18,6 +18,7 @@ function updateModel(annotation, changes, permissions) {
   return Object.assign({}, annotation, {
     // Apply changes from the draft
     tags: changes.tags,
+    color: changes.color,
     text: changes.text,
     permissions: changes.isPrivate
       ? permissions.private(userid)
@@ -161,6 +162,7 @@ function AnnotationController(
       );
     }
     self.annotation.text = self.annotation.text || '';
+    self.annotation.color = self.annotation.color || {label: 'green', value: 'green'};
     if (!Array.isArray(self.annotation.tags)) {
       self.annotation.tags = [];
     }
@@ -492,6 +494,7 @@ function AnnotationController(
     }
     drafts.update(self.annotation, {
       tags: self.state().tags,
+      color: self.state().color,
       text: self.state().text,
       isPrivate: privacy === 'private',
     });
@@ -567,14 +570,25 @@ function AnnotationController(
   this.setText = function(text) {
     drafts.update(self.annotation, {
       isPrivate: self.state().isPrivate,
+      color: self.state().color,
       tags: self.state().tags,
       text: text,
+    });
+  };
+
+  this.setColor = function(color) {
+    drafts.update(self.annotation, {
+      isPrivate: self.state().isPrivate,
+      color: color,
+      tags: self.state().tags,
+      text: self.state().text,
     });
   };
 
   this.setTags = function(tags) {
     drafts.update(self.annotation, {
       isPrivate: self.state().isPrivate,
+      color: self.state().color,
       tags: tags,
       text: self.state().text,
     });
@@ -587,6 +601,7 @@ function AnnotationController(
     }
     return {
       tags: self.annotation.tags,
+      color: self.annotation.color,
       text: self.annotation.text,
       isPrivate: !permissions.isShared(
         self.annotation.permissions,

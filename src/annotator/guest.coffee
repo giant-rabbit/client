@@ -150,6 +150,9 @@ module.exports = class Guest extends Delegator
         this.anchor(annotation)
 
   _connectAnnotationUISync: (crossframe) ->
+    crossframe.on 'annotationUpdated', (annotation) =>
+      this.refreshAnchor(annotation)
+
     crossframe.on 'focusAnnotations', (tags=[]) =>
       for anchor in @anchors when anchor.highlights?
         toggle = anchor.annotation.$tag in tags
@@ -240,7 +243,8 @@ module.exports = class Guest extends Delegator
       return animationPromise ->
         range = xpathRange.sniff(anchor.range)
         normedRange = range.normalize(root)
-        highlights = highlighter.highlightRange(normedRange)
+        className = 'annotator-hl ' + annotation.color
+        highlights = highlighter.highlightRange(normedRange, className)
 
         $(highlights).data('annotation', anchor.annotation)
         anchor.highlights = highlights
@@ -297,6 +301,11 @@ module.exports = class Guest extends Delegator
       anchors.push(anchor)
 
     return Promise.all(anchors).then(sync)
+
+  refreshAnchor: (annotation) ->
+    for anchor in @anchors
+      if anchor.annotation.id is annotation.id
+        anchor.highlights[0].className = 'annotator-hl ' + annotation.color
 
   detach: (annotation) ->
     anchors = []

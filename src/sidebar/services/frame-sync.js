@@ -30,7 +30,9 @@ function formatAnnot(ann) {
     msg: {
       document: ann.document,
       target: ann.target,
+      color: ann.color,
       uri: ann.uri,
+      id: ann.id,
     },
   };
 }
@@ -253,6 +255,14 @@ function FrameSync($rootScope, $window, Discovery, store, bridge) {
    */
   this.scrollToAnnotation = function(tag) {
     bridge.call('scrollToAnnotation', tag);
+  };
+
+  /**
+   * Update the annotation anchor to reflect the newly created or updated
+   * annotation's highlight color.
+   */
+  this.updateAnnotationAnchor = function(annotation) {
+    bridge.call('annotationUpdated', annotation);
   };
 }
 

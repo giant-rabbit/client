@@ -48,6 +48,12 @@
   </section>
   <!-- / Body -->
 
+  <!-- Color -->
+  <div class="annotation-body form-field" ng-if="vm.editing()">
+    <color-picker color="vm.state().color"
+                on-edit-color="vm.setColor(color)"></color-picker>
+  </div>
+
   <!-- Tags -->
   <div class="annotation-body form-field" ng-if="vm.editing()">
     <tag-editor tags="vm.state().tags"
