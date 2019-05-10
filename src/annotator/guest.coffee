@@ -350,11 +350,23 @@ module.exports = class Guest extends Delegator
       source = info.uri
       annotation.target = ({source, selector} for selector in selectors)
 
+    setLineNumber = (ranges) ->
+      el = ranges[0].startContainer
+      lineClasses = $(el).closest('.line').attr('class').split(/\s+/)
+      lineNumber = ''
+      for lineClass in lineClasses
+        if lineClass.startsWith("line-count-")
+          lineClassSplit = lineClass.split('-')
+          lineNumber = lineClassSplit[2]
+      return lineNumber
+
     info = this.getDocumentInfo()
     selectors = Promise.all(ranges.map(getSelectors))
 
     metadata = info.then(setDocumentInfo)
     targets = Promise.all([info, selectors]).then(setTargets)
+
+    annotation.lineNumber = setLineNumber(ranges)
 
     targets.then(-> self.publish('beforeAnnotationCreated', [annotation]))
     targets.then(-> self.anchor(annotation))
