@@ -352,12 +352,14 @@ module.exports = class Guest extends Delegator
 
     setLineNumber = (ranges) ->
       el = ranges[0].startContainer
-      lineClasses = $(el).closest('.line').attr('class').split(/\s+/)
+      lineClassFull = $(el).closest('.line').attr('class')
       lineNumber = ''
-      for lineClass in lineClasses
-        if lineClass.startsWith("line-count-")
-          lineClassSplit = lineClass.split('-')
-          lineNumber = lineClassSplit[2]
+      if lineClassFull
+        lineClasses = lineClassFull.split(/\s+/)
+        for lineClass in lineClasses
+          if lineClass.startsWith("line-count-")
+            lineClassSplit = lineClass.split('-')
+            lineNumber = lineClassSplit[2]
       return lineNumber
 
     info = this.getDocumentInfo()
